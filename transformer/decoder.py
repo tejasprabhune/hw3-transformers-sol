@@ -1,46 +1,9 @@
-import math
-
 import torch
 import torch.nn as nn
 
 from .attention import MultiHeadAttention, FeedForwardNN
 
-class PositionalEncoding(nn.Module):
-    """
-    The PositionalEncoding layer will take in an input tensor
-    of shape (B, T, C) and will output a tensor of the same
-    shape, but with positional encodings added to the input.
-
-    We provide you with the full implementation for this
-    homework.
-
-    Based on:
-        https://web.archive.org/web/20230315052215/https://pytorch.org/tutorials/beginner/transformer_tutorial.html
-    """
-
-    def __init__(self, d_model: int, dropout: float = 0.1, max_len: int = 5000):
-        """Initialize the PositionalEncoding layer."""
-        super().__init__()
-        self.dropout = nn.Dropout(p=dropout)
-
-        position = torch.arange(max_len).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0, d_model, 2) * (-math.log(10000.0) / d_model))
-        pe = torch.zeros(max_len, 1, d_model)
-        pe[:, 0, 0::2] = torch.sin(position * div_term)
-        pe[:, 0, 1::2] = torch.cos(position * div_term)
-        self.register_buffer('pe', pe)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Arguments:
-            x: Tensor, shape (B, T, C)
-        """
-        x = x.transpose(0, 1)
-        x = x + self.pe[:x.size(0)]
-        x = self.dropout(x)
-        return x.transpose(0, 1)
-
-class EncoderLayer(nn.Module):
+class DecoderLayer(nn.Module):
     
     def __init__(self, 
                  num_heads: int, 
@@ -48,15 +11,24 @@ class EncoderLayer(nn.Module):
                  qk_length: int, 
                  value_length: int):
         """
-        Each encoder layer will take in an embedding of
-        shape (B, T, C) and will output an encoded representation
+        Each decoder layer will take in two embeddings of
+        shape (B, T, C):
+
+        1. The `target` embedding, which comes from the decoder
+        2. The `source` embedding, which comes from the encoder
+
+        and will output a representation
         of the same shape.
 
-        The encoder layer will have a Multi-Head Attention layer
-        and a Feed-Forward Neural Network layer.
+        The decoder layer will have three main components:
+            1. A Masked Multi-Head Attention layer (you'll need to
+               modify the MultiHeadAttention layer to handle this!)
+            2. A Multi-Head Attention layer for cross-attention
+               between the target and source embeddings.
+            3. A Feed-Forward Neural Network layer.
 
         Remember that for each Multi-Head Attention layer, we
-        need create Q, K, and V matrices from the input embedding!
+        need create Q, K, and V matrices from the input embedding(s)!
         """
 
         self.num_heads = num_heads
@@ -74,7 +46,7 @@ class EncoderLayer(nn.Module):
         raise NotImplementedError("Implement the EncoderLayer forward method!")
 
 
-class Encoder(nn.Module):
+class Decoder(nn.Module):
 
     def __init__(self, 
                  vocab_size: int, 
@@ -126,4 +98,3 @@ class Encoder(nn.Module):
         The forward pass of the Encoder.
         """
         raise NotImplementedError("Implement the Encoder forward method!")
-
