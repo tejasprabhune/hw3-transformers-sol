@@ -7,6 +7,10 @@ class CharacterTokenizer(Tokenizer):
         """
         Initializes the CharacterTokenizer class for French to English translation.
         We ignore capitalization.
+
+        Implement the remaining parts of __init__ by building the vocab.
+        Implement the two functions you defined in Tokenizer here. Once you are
+        done, you should pass all the tests in test_character_tokenizer.py.
         """
         super().__init__()
 
@@ -16,17 +20,5 @@ class CharacterTokenizer(Tokenizer):
         # we will use a fixed set of characters that we know will be present in the dataset.
         self.characters = "aàâæbcçdeéèêëfghiîïjklmnoôœpqrstuùûüvwxyÿz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{} "
 
-        for i, char in enumerate(self.characters):
-            self.vocab[char] = i
-
-        if verbose:
-            print("Vocabulary:", self.vocab)
-
-    def encode(self, text: str) -> torch.Tensor:
-        text = text.lower()
-        return torch.tensor([self.vocab[char] for char in text])
-    
-    def decode(self, tokens: torch.Tensor) -> str:
-        tokens = tokens.tolist()
-        return "".join([self.characters[token] for token in tokens])
+        raise NotImplementedError("Need to implement vocab initialization and the two functions from tokenizer")
 
