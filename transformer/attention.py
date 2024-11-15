@@ -102,7 +102,9 @@ class MultiHeadAttention(nn.Module):
 
 class FeedForwardNN(nn.Module):
 
-    def __init__(self, hidden_dim: int):
+    def __init__(self, 
+                 embedding_dim: int,
+                 hidden_dim: int):
         """
         The Feed-Forward Neural Network layer will take in
         an input tensor of shape (B, T, C) and will output
@@ -116,11 +118,14 @@ class FeedForwardNN(nn.Module):
         """
         super().__init__()
 
+        self.hidden_dim = hidden_dim
+        self.embedding_dim = embedding_dim
+
         # Define any layers you'll need in the forward pass
         self.relu = nn.ReLU()
         raise NotImplementedError("Implement the FeedForwardNN layer definitions!")
     
-    def forward(self):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         The forward pass of the FeedForwardNN.
         """
