@@ -116,7 +116,7 @@ class MultiHeadAttention(nn.Module):
         different heads, each with shape (B, T, qk_length).
 
         Args:
-            x: torch.Tensor of shape (B, T, C), where C = num_heads * qk_length
+            x: torch.Tensor of shape (B, T, C), where C = num_heads * vec_length
             vec_length: int, the length of the query/key/value vectors
 
         Returns:
