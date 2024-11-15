@@ -16,9 +16,10 @@ class MultiHeadAttention(nn.Module):
         matrices and will output an attention matrix of shape <TODO>.
 
         First, Q, K, and V should be projected to have
-        a shape of (B, T, C) where C = num_heads * qk_length. You are
-        then expected to split the C dimension into num_heads
-        different heads, each with shape (B, T, qk_length).
+        a shape of (B, T, C) where C = num_heads * qk_length 
+        (OR value_length). You are then expected to split 
+        the C dimension into num_heads different heads, each 
+        with shape (B, T, vec_length).
 
         Next, you will compute the scaled dot-product attention
         between Q, K, and V.
@@ -42,10 +43,10 @@ class MultiHeadAttention(nn.Module):
     def split_heads(self, x: torch.Tensor, vec_length: int) -> torch.Tensor:
         """
         Split the C dimension of the input tensor into num_heads
-        different heads, each with shape (B, T, qk_length).
+        different heads, each with shape (B, T, vec_length).
 
         Args:
-            x: torch.Tensor of shape (B, T, C), where C = num_heads * qk_length
+            x: torch.Tensor of shape (B, T, C), where C = num_heads * vec_length
             vec_length: int, the length of the query/key/value vectors
 
         Returns:
