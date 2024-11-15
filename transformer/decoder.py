@@ -56,18 +56,17 @@ class Decoder(nn.Module):
                  qk_length: int,
                  value_length: int):
         """
-        Remember that the encoder will take in a sequence
-        of tokens and will output an encoded representation
+        Remember that the decoder will take in a sequence
+        of tokens AND a source embedding
+        and will output an encoded representation
         of shape (B, T, C).
 
         First, we need to create an embedding from the sequence
         of tokens. For this, we need the vocab size.
 
-        Next, we want to create a series of Encoder layers,
-        each of which will have a Multi-Head Attention layer
-        and a Feed-Forward Neural Network layer. For this, we
-        need to specify the number of layers and the number of
-        heads.
+        Next, we want to create a series of Decoder layers.
+        For this, we need to specify the number of layers 
+        and the number of heads.
 
         Additionally, for every Multi-Head Attention layer, we
         need to know how long each query/key is, and how long
@@ -89,12 +88,12 @@ class Decoder(nn.Module):
         # Recall that the input is just a sequence of tokens,
         # so we'll have to first create some kind of embedding
         # and then use the other layers we've implemented to
-        # build out the Transformer encoder.
-        raise NotImplementedError("Implement the Encoder layer definitions!")
+        # build out the Transformer decoder.
+        raise NotImplementedError("Implement the Decoder layer definitions!")
 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
-        The forward pass of the Encoder.
+        The forward pass of the Decoder.
         """
         raise NotImplementedError("Implement the Encoder forward method!")
