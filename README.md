@@ -17,8 +17,11 @@ into a few steps.
 You can get started by exploring the code!
 
 We've provided a few sanity checks:
-`python -m unittest tests/tokenizer/test_character_tokenizer.py`
-`python -m unittest tests/transformer/test_attention.py`
+
+```bash
+python -m unittest tests/tokenizer/test_character_tokenizer.py
+python -m unittest tests/transformer/test_attention.py
+```
 
 However, these are not exhaustive, and also do not check for
 correctness of the model. Rather, they check that you are
