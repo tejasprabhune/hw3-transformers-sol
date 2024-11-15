@@ -11,4 +11,4 @@ class Tokenizer:
     This class is simply a template that could be
     used in the future for other tokenizers.
     """
-    raise UnimplementedError("Tokenizer class not implemented yet.")
+    raise NotImplementedError("Tokenizer class not implemented yet.")
