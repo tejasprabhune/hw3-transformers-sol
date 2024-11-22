@@ -28,7 +28,13 @@ class CharacterTokenizer(Tokenizer):
 
     def encode(self, text: str) -> torch.Tensor:
         text = text.lower()
-        return torch.tensor([self.vocab[char] for char in text])
+        encs = []
+        for char in text:
+            try:
+                encs.append(self.vocab[char])
+            except KeyError:
+                encs.append(self.vocab[" "])
+        return torch.tensor(encs)
     
     def decode(self, tokens: torch.Tensor) -> str:
         tokens = tokens.tolist()

@@ -34,5 +34,13 @@ class TestCharacterTokenizer(unittest.TestCase):
         decoded = tokenizer.decode(encoded)
         self.assertEqual(decoded, text.lower())
 
+    def test_special_char(self):
+        tokenizer = CharacterTokenizer()
+        text = ("© 2006 An original idea and a realization of the ASTROLab of Mont-Mégantic National Park")
+        encoded = tokenizer.encode(text)
+        decoded = tokenizer.decode(encoded)
+        text_no_special = "  2006 an original idea and a realization of the astrolab of mont-mégantic national park"
+        self.assertEqual(decoded, text_no_special.lower())
+
 if __name__ == '__main__':
     unittest.main()
