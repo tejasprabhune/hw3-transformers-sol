@@ -21,9 +21,9 @@ class FrenchEnglishDataset(Dataset):
 
     def __len__(self):
         if self.train:
-            return int(len(self.lines) * 1.0)
+            return int(len(self.lines) * 0.1)
         else:
-            return int(len(self.lines) * 0.2)
+            return int(len(self.lines) * 0.1)
 
     def __getitem__(self, idx, raw=False):
         if torch.is_tensor(idx):
@@ -31,7 +31,6 @@ class FrenchEnglishDataset(Dataset):
 
         line = self.lines[idx][0].split(",")
         english_sentence, french_sentence = line[0], line[1]
-        print(english_sentence, french_sentence)
 
         if raw:
             return french_sentence, english_sentence
@@ -41,3 +40,11 @@ class FrenchEnglishDataset(Dataset):
 
         return french_encoded, english_encoded
 
+    def collate_fn(batch):
+        inputs = [torch.tensor(b[0]) for b in batch]
+        targets = [torch.tensor(b[1]) for b in batch]
+
+        inputs = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True)
+        targets = torch.nn.utils.rnn.pad_sequence(targets, batch_first=True)
+
+        return inputs, targets
