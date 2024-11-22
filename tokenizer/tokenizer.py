@@ -11,4 +11,9 @@ class Tokenizer:
     This class is simply a template that could be
     used in the future for other tokenizers.
     """
-    raise NotImplementedError("Tokenizer class not implemented yet.")
+
+    def encode(self, text: str) -> List[int]:
+        raise NotImplementedError
+    
+    def decode(self, ids: List[int]) -> str:
+        raise NotImplementedError
