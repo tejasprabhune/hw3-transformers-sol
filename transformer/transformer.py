@@ -11,8 +11,11 @@ class Transformer(nn.Module):
                  num_layers: int, 
                  num_heads: int,
                  ffn_hidden_dim: int,
+                 embedding_dim: int,
                  qk_length: int,
-                 value_length: int):
+                 value_length: int,
+                 max_length: int,
+                 dropout: float = 0.1):
         """
         Here, we implement the full Transformer model.
 
@@ -29,10 +32,12 @@ class Transformer(nn.Module):
         a sequence of logits representing the next token in
         the target sequence.
         """
+        super().__init__()
 
         self.vocab_size = vocab_size
         self.num_layers = num_layers
         self.num_heads = num_heads
+        self.embedding_dim = embedding_dim
         self.ffn_hidden_dim = ffn_hidden_dim
 
         self.qk_length = qk_length
@@ -42,7 +47,25 @@ class Transformer(nn.Module):
         # Hint: This should be relatively simple, as you've
         # already implemented the Encoder and Decoder layers.
         # Check the `Attention Is All You Need` paper for guidance.
-        raise NotImplementedError("Implement the Transformer layer definitions!")
+        self.encoder = Encoder(vocab_size,
+                               num_layers, 
+                               num_heads, 
+                               ffn_hidden_dim, 
+                               embedding_dim, 
+                               qk_length, 
+                               value_length, 
+                               max_length, 
+                               dropout)
+
+        self.decoder = Decoder(vocab_size,
+                               num_layers, 
+                               num_heads, 
+                               ffn_hidden_dim, 
+                               embedding_dim, 
+                               qk_length, 
+                               value_length, 
+                               max_length, 
+                               dropout)
 
     def forward(self, src: torch.Tensor, tgt: torch.Tensor) -> torch.Tensor:
         """
@@ -55,4 +78,6 @@ class Transformer(nn.Module):
         Returns:
             torch.Tensor with shape (B, T2, C) representing the output logits
         """
-        raise NotImplementedError("Implement the forward method!")
+        enc_x = self.encoder(src)
+        dec_x = self.decoder(tgt, enc_x)
+        return dec_x
