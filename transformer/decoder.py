@@ -123,6 +123,7 @@ class Decoder(nn.Module):
             DecoderLayer(num_heads, embedding_dim, ffn_hidden_dim, qk_length, value_length, dropout)
             for _ in range(num_layers)
         ])
+        self.layer_norm = nn.LayerNorm(embedding_dim)
         self.fc = nn.Linear(embedding_dim, vocab_size)
         self.dropout = nn.Dropout(dropout)
 
@@ -147,5 +148,7 @@ class Decoder(nn.Module):
         for decoder_layer in self.decoder_layers:
             x = decoder_layer(x, enc_x, mask)
 
+        x = self.layer_norm(x)
         x = self.fc(x)
+        # x = torch.nn.functional.softmax(x, dim=-1)
         return x

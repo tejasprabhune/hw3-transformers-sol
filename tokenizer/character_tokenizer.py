@@ -1,5 +1,8 @@
 from .tokenizer import Tokenizer
 
+import argparse
+from tqdm import tqdm
+
 import torch
 
 class CharacterTokenizer(Tokenizer):
@@ -18,8 +21,10 @@ class CharacterTokenizer(Tokenizer):
 
         # Normally, we iterate through the dataset and find all unique characters. To simplify things,
         # we will use a fixed set of characters that we know will be present in the dataset.
-        self.characters = "aàâæbcçdeéèêëfghiîïjklmnoôœpqrstuùûüvwxyÿz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{} "
-
+        self.characters = "aàâæbcçdeéèêëfghiîïjklmnoôœpqrstuùûüvwxyÿz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}’•–í€óá«»… º◦"
+        self.characters = """aàâæbcçdeéèêëfghiîïjklmnoôœpqrstuùûüvwxyÿz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}’•–í€óá«»… º◦©ö°äµ—ø­·òãñ―½¼γ®⇒²▪−√¥£¤ß´úª¾є™，ﬁõ  �►□′″¨³‑¯≈ˆ§‰●ﬂ⇑➘①②„≤±†✜✔➪✖◗¢ไทยếệεληνικαåşıруский 한국어汉语ž¹¿šćþ‚‛─÷〈¸⎯×←→∑δ■ʹ‐≥τ;∆℡ƒð¬¡¦βϕ▼⁄ρσ⋅≡∂≠π⎛⎜⎞ω∗"""
+        # self.characters += "\u2028"  # special token for end of sentence
+        
         for i, char in enumerate(self.characters):
             self.vocab[char] = i
 
@@ -33,9 +38,12 @@ class CharacterTokenizer(Tokenizer):
             try:
                 encs.append(self.vocab[char])
             except KeyError:
-                encs.append(self.vocab[" "])
+                print(f"Added {char} to vocab")
+                # encs.append(self.vocab[char])
+                encs.append(0)
         return torch.tensor(encs)
     
     def decode(self, tokens: torch.Tensor) -> str:
         tokens = tokens.tolist()
         return "".join([self.characters[token] for token in tokens])
+
