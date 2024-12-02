@@ -5,38 +5,16 @@ import torch
 
 from torch.utils.data import DataLoader
 
-from transformer import Transformer, FrenchEnglishDataset, DummyDataset
-from tokenizer.character_tokenizer import CharacterTokenizer
+from transformer import Transformer, FrenchEnglishDataset
 from tokenizer.bpe_tokenizer import BPETokenizer
 
-import wandb
 
 def main():
 
-    # wandb.init(
-    #     # set the wandb project where this run will be logged
-    #     project="transformer",
-
-    #     # track hyperparameters and run metadata
-    #     config={
-    #     "learning_rate": 0.03,
-    #     "architecture": "Transformer",
-    #     "dataset": "FrenchEnglishDataset",
-    #     "epochs": 10,
-    #     }
-    # )
-
-    
     tokenizer = BPETokenizer()
-    # tokenizer = CharacterTokenizer()
     vocab_size = len(tokenizer.vocab)
     train_dataset = FrenchEnglishDataset(Path("smaller.csv"), tokenizer=tokenizer, train=True)
-    # train_dataset = DummyDataset(train=True)
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, collate_fn=FrenchEnglishDataset.collate_fn)
-
-    # val_dataset = FrenchEnglishDataset(Path("en-fr.csv"), train=False)
-    # val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
-
 
     model = Transformer(vocab_size=vocab_size,
                         num_layers=2,
@@ -47,7 +25,7 @@ def main():
                         value_length=64,
                         max_length=5000,
                         dropout=0.1)
-    # model.load_state_dict(torch.load("ckpts/model_last.pt"))
+
     for param in model.parameters():
         if param.dim() > 1:
             torch.nn.init.xavier_uniform_(param)
@@ -69,19 +47,7 @@ def main():
             src = src.to(torch.int64)
             tgt = tgt.to(torch.int64)
 
-            # src_dec = tokenizer.decode(src[0])
-            # tgt_dec = tokenizer.decode(tgt[0])
-
-
             outputs = model(src, tgt)
-
-            # outputs_dec = tokenizer.decode(outputs[0].argmax(dim=-1))
-
-            # train_tqdm.set_postfix({"src": src_dec, "tgt": tgt_dec, "outputs": outputs_dec})
-
-            # print(src_dec)
-            # print(tgt_dec)
-            # print(outputs_dec)
 
             outputs = outputs.view(-1, vocab_size)
 
@@ -96,9 +62,6 @@ def main():
             optimizer.step()
 
             train_tqdm.set_postfix({"loss": loss.item()})
-
-            # if i % 10 == 0:
-            #     wandb.log({"loss": loss.item()})
 
             if i % 500 == 0:
                 torch.save(model.state_dict(), "ckpts/model_last.pt")
