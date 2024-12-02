@@ -16,7 +16,7 @@ class DummyDataset(Dataset):
         return 100
     
     def __getitem__(self, idx):
-        return torch.tensor([1, 2, 3]), torch.tensor([1, 2, 3])
+        return torch.tensor([1, 2, 3]), torch.tensor([1, 2, 3, 4])
 
 class FrenchEnglishDataset(Dataset):
     def __init__(self, translation_csv: Path, tokenizer: Tokenizer, train=True):
@@ -47,9 +47,6 @@ class FrenchEnglishDataset(Dataset):
 
         english_sentence, french_sentence = line[0], line[1]
 
-        english_sentence = "<|endoftext|>" + english_sentence + "<|endoftext|>"
-        french_sentence = "<|endoftext|>" + french_sentence + "<|endoftext|>"
-
         french_encoded = self.tokenizer.encode(french_sentence)
         english_encoded = self.tokenizer.encode(english_sentence)
 
@@ -59,7 +56,7 @@ class FrenchEnglishDataset(Dataset):
         inputs = [torch.tensor(b[0]) for b in batch]
         targets = [torch.tensor(b[1]) for b in batch]
 
-        inputs = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True, padding_value=50256)
-        targets = torch.nn.utils.rnn.pad_sequence(targets, batch_first=True, padding_value=50256)
+        inputs = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True)
+        targets = torch.nn.utils.rnn.pad_sequence(targets, batch_first=True)
 
         return inputs, targets
