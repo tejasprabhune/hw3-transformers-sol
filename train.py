@@ -58,7 +58,7 @@ def main():
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1000, gamma=0.9)
 
-    loss_fn = torch.nn.CrossEntropyLoss(label_smoothing=0.1)
+    loss_fn = torch.nn.CrossEntropyLoss(label_smoothing=0.1, ignore_index=0)
 
     for epoch in range(1000):
         train_tqdm = tqdm(enumerate(train_loader), total=len(train_loader), dynamic_ncols=True)
