@@ -57,6 +57,8 @@ def main():
     optimizer = torch.optim.Adam(model.parameters(), lr=0.003)
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1000, gamma=0.9)
 
+    loss_fn = torch.nn.CrossEntropyLoss(ignore_index=50256)
+
     for epoch in range(1000):
         train_tqdm = tqdm(enumerate(train_loader), total=len(train_loader))
         for i, (src, tgt) in train_tqdm:
@@ -67,10 +69,16 @@ def main():
             tgt = tgt.to(torch.int64)
 
             outputs = model(src, tgt)
+            outputs = outputs.view(-1, vocab_size)
+
+            tgt = tgt.view(-1)
 
             optimizer.zero_grad()
-            loss = torch.nn.functional.cross_entropy(outputs.view(-1, vocab_size), tgt.view(-1))
+            loss = loss_fn(outputs, tgt)
             loss.backward()
+
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+
             optimizer.step()
 
             train_tqdm.set_postfix({"loss": loss.item()})

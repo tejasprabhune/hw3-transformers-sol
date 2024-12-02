@@ -36,7 +36,7 @@ class FrenchEnglishDataset(Dataset):
         else:
             return int(len(self.lines) * 0.1)
 
-    def __getitem__(self, idx, raw=False):
+    def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
         
@@ -47,8 +47,8 @@ class FrenchEnglishDataset(Dataset):
 
         english_sentence, french_sentence = line[0], line[1]
 
-        if raw:
-            return french_sentence, english_sentence
+        english_sentence = "<|endoftext|>" + english_sentence + "<|endoftext|>"
+        french_sentence = "<|endoftext|>" + french_sentence + "<|endoftext|>"
 
         french_encoded = self.tokenizer.encode(french_sentence)
         english_encoded = self.tokenizer.encode(english_sentence)
@@ -59,9 +59,7 @@ class FrenchEnglishDataset(Dataset):
         inputs = [torch.tensor(b[0]) for b in batch]
         targets = [torch.tensor(b[1]) for b in batch]
 
-        max_len = max(max(len(b[0]), len(b[1])) for b in batch)
-
-        inputs = torch.stack([torch.nn.functional.pad(b, (0, max_len - len(b))) for b in inputs])
-        targets = torch.stack([torch.nn.functional.pad(b, (0, max_len - len(b))) for b in targets])
+        inputs = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True, padding_value=50256)
+        targets = torch.nn.utils.rnn.pad_sequence(targets, batch_first=True, padding_value=50256)
 
         return inputs, targets
