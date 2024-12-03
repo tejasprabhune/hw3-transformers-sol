@@ -5,7 +5,6 @@ from tqdm import tqdm
 import torch
 from torch.utils.data import Dataset
 
-from tokenizer.character_tokenizer import CharacterTokenizer
 from tokenizer.tokenizer import Tokenizer
 
 class DummyDataset(Dataset):
