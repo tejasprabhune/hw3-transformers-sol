@@ -32,9 +32,9 @@ class MultiHeadAttention(nn.Module):
         """
         super().__init__()
 
-        self.num_heads = num_heads
-        self.qk_length = qk_length
-        self.value_length = value_length
+        self.num_heads: int = num_heads
+        self.qk_length: int = qk_length
+        self.value_length: int = value_length
 
         # Define any layers you'll need in the forward pass
         # (hint: number of Linear layers needed != 3)
@@ -100,12 +100,14 @@ class MultiHeadAttention(nn.Module):
         lookup = torch.matmul(Q, K.transpose(-2, -1)) 
         lookup = lookup / torch.sqrt(torch.tensor(Q.size(-1)))
 
-        attention = torch.nn.functional.softmax(lookup, dim=-1)
 
         if mask is not None:
             # TODO: in decoder section
-            attention = attention.masked_fill(mask == 0, -1e9)
+            attention = lookup.masked_fill(mask == 0, float('-inf'))
 
+        attention = torch.nn.functional.softmax(attention, dim=-1)
+
+        print(attention.shape, V.shape)
         return torch.matmul(attention, V)
 
 
